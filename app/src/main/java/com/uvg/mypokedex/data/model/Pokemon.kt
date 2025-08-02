@@ -4,7 +4,7 @@ data class Pokemon(
     val id: Int,
     val type: String,
     val name: String,
-    val health: Double,
+    val health: Int,
 ) {
 
 
