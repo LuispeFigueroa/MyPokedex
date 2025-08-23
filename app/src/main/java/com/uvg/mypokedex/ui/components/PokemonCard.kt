@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun PokemonCard(pokemon: Pokemon){
- val typeColor = when (pokemon.type.lowercase()) {
+ val typeColor = when (pokemon.types[0].lowercase()) {
   "agua" -> Color.Cyan
   "fuego" -> Color.Red
   "planta" -> Color.Green
@@ -45,6 +45,7 @@ fun PokemonCard(pokemon: Pokemon){
    horizontalAlignment = Alignment.CenterHorizontally,
    verticalArrangement = Arrangement.spacedBy(8.dp)
   ) {
+   PokemonMeasurements(pokemon = pokemon)
    AsyncImage(
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png",
     contentDescription = "Imagen de ${pokemon.name}",
