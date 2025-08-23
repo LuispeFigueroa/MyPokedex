@@ -1,0 +1,32 @@
+package com.uvg.mypokedex.ui.components
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+
+@Composable
+
+fun PokemonTopBar(
+    name: String,
+    onBackClick: () -> Unit,
+    onHeartClick: (() -> Unit)? = null
+) {
+    TopAppBar(
+        title = { Text(name) },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Go back")
+            }
+        },
+        actions = {
+            if (onHeartClick != null) {
+                IconButton(onClick = onHeartClick) {
+                    Icon(Icons.Default.Favorite, contentDescription = "like")
+                }
+            }
+        }
+    )
+}
