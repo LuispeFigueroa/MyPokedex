@@ -45,7 +45,6 @@ fun PokemonCard(pokemon: Pokemon){
    horizontalAlignment = Alignment.CenterHorizontally,
    verticalArrangement = Arrangement.spacedBy(8.dp)
   ) {
-   PokemonMeasurements(pokemon = pokemon)
    AsyncImage(
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png",
     contentDescription = "Imagen de ${pokemon.name}",

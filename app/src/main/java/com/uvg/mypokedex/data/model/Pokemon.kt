@@ -5,6 +5,7 @@ data class Pokemon(
     val types: List<String>,
     val name: String,
     val health: Int,
+    val maxHealth: Int,
     val stats: Stats,
     val weight: Float,
     val height: Float
