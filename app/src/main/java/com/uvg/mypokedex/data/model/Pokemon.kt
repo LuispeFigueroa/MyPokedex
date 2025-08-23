@@ -6,11 +6,13 @@ data class Pokemon(
     val name: String,
     val health: Int,
     val stats: Stats,
+    val weight: Float,
     val height: Float
 )
+
 data class Stats(
-    val Attack:Int,
-    val Defense:Int,
+    val Attack: Int,
+    val Defense: Int,
     val SpecialAttack: Int,
     val Speed: Int
 )
