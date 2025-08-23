@@ -20,7 +20,8 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 @Composable
-fun PokemonStatRow(pokemon: Pokemon) {
+fun PokemonStatRow(pokemon: Pokemon, stat: Int) {
+
     val currentHp = pokemon.health
     val maxHp = pokemon.maxHealth
 
