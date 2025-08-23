@@ -12,7 +12,8 @@ class HomeViewModel {
             Pokemon(150, "Psiquico","Mewtwo",200),
         )
     }
-
-
 }
+
+
+
 
