@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
-import com.uvg.mypokedex.ui.components.PokemonMeasurements
 import com.uvg.mypokedex.ui.components.UnstablePokemonList
 
 @Composable
