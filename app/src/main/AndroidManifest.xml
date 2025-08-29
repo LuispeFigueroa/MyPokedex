@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyPokedex">
         <activity
-            android:name=".ui.features.home.MainActivity"
+            android:name="com.uvg.mypokedex.ui.features.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyPokedex">

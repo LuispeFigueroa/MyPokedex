@@ -14,7 +14,6 @@ import com.uvg.mypokedex.ui.components.PokemonCard
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel(),
-    onPokemonClick: (Pokemon) -> Unit = {}
 ) {
     val pokemonList = viewModel.getPokemonList()
 
@@ -26,11 +25,9 @@ fun HomeScreen(
     ) {
         items(
             items = pokemonList,
-            key = { it.id }
         ) { p ->
             PokemonCard(
                 pokemon = p,
-                onClick = onPokemonClick
             )
         }
     }
