@@ -10,9 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.theme.MyPokedexTheme
-import com.uvg.mypokedex.data.model.Pokemon
-import com.uvg.mypokedex.data.model.Stats
-import com.uvg.mypokedex.ui.features.details.DetailScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
