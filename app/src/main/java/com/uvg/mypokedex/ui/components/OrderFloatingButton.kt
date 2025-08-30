@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
-
 @Composable
 fun OrderButton(initialIsAscending: Boolean = true) {
     var isAscending by remember { mutableStateOf(initialIsAscending) } //establecer estado inicial
