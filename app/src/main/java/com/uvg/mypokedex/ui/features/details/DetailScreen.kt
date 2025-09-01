@@ -20,13 +20,15 @@ import com.uvg.mypokedex.ui.components.TopBar
 @Composable
 fun DetailScreen(
     pokemon: Pokemon,
-    onBackClick: () -> Unit,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopBar(
                 name = pokemon.name,
-                onBackClick = onBackClick
+                isFavorite = isFavorite,
+                onToggleFavorite = onToggleFavorite,
             )
         }
     ) { innerPadding ->
@@ -40,7 +42,7 @@ fun DetailScreen(
             PokemonMeasurements(pokemon = pokemon)
             Spacer(Modifier.height(12.dp))
 
-            for (stat in StatType.values()) {
+            for (stat in StatType.entries) {
                 PokemonStatRow(
                     pokemon = pokemon,
                     stat = stat,
