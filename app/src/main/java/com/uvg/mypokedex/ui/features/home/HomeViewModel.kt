@@ -1,10 +1,21 @@
 package com.uvg.mypokedex.ui.features.home
 
+import android.content.Context
+import androidx.lifecycle.ViewModel
 import com.uvg.mypokedex.data.model.Pokemon
 import com.uvg.mypokedex.data.model.Stats
 
 
-class HomeViewModel {
+class HomeViewModel: ViewModel() {
+    private var currentPage = 0
+
+    fun getFileNameForCurrentPage(): String {
+        val startIndex = currentPage * 10 + 1
+        val endIndex = startIndex + 9
+
+        return "pokemon_${startIndex.toString().padStart(3, '0')}_${endIndex.toString().padStart(3, '0')}.json"
+    }
+
     fun getPokemonList(): List<Pokemon> {
         return listOf(
             Pokemon(1, listOf("planta", "Veneno"),"Bulbasaur", Stats(50, 50,70, 50, 85, 60), 125.5f, 100.0f),
