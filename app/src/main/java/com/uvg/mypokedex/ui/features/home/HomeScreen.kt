@@ -25,8 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.uvg.mypokedex.ui.components.OrderButton
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 fun searchPokemon(searchText: String, pokemonList: List<Pokemon>): List<Pokemon> {
     if (searchText.isBlank()) {
@@ -38,7 +37,7 @@ fun searchPokemon(searchText: String, pokemonList: List<Pokemon>): List<Pokemon>
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = HomeViewModel(),
+    viewModel: HomeViewModel = viewModel(),
     favoriteIds: Set<Int>,
     onToggleFavorite: (Int) -> Unit,
 ) {
