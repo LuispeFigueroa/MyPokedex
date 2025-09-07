@@ -29,10 +29,10 @@ fun PokemonStatRow(
             StatType.Health -> {
                 pokemon.stats.StatBar()
             }
-            StatType.Attack         -> StatLine("Attack",         pokemon.stats.Attack)
-            StatType.Defense        -> StatLine("Defense",        pokemon.stats.Defense)
-            StatType.SpecialAttack  -> StatLine("Special Attack", pokemon.stats.SpecialAttack)
-            StatType.Speed          -> StatLine("Speed",          pokemon.stats.Speed)
+            StatType.Attack         -> StatLine("Attack",         pokemon.stats.attack)
+            StatType.Defense        -> StatLine("Defense",        pokemon.stats.defense)
+            StatType.SpecialAttack  -> StatLine("Special Attack", pokemon.stats.specialAttack)
+            StatType.Speed          -> StatLine("Speed",          pokemon.stats.speed)
         }
     }
 }

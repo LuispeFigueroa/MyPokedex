@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.data.model.Pokemon
@@ -22,10 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.uvg.mypokedex.ui.components.OrderButton
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.*
 
 fun searchPokemon(searchText: String, pokemonList: List<Pokemon>): List<Pokemon> {
     if (searchText.isBlank()) {
@@ -41,23 +45,41 @@ fun HomeScreen(
     favoriteIds: Set<Int>,
     onToggleFavorite: (Int) -> Unit,
 ) {
-    val pokemonList = viewModel.getPokemonList()
+    val pokemonList = viewModel.pokemonList
     var searchText by rememberSaveable { mutableStateOf("") }
-    var isAscending by remember { mutableStateOf(true) } //estado de orden de los pokemones
-    val displayedPokemons =remember(pokemonList, searchText, isAscending){
-        searchPokemon(searchText, pokemonList)
-            .let{ filteredList ->
-                if (isAscending){
-                    filteredList.sortedBy{it.name.lowercase() } //ordenar despues de que se haya buscado alguno por nombre
-                }else{
-                    filteredList.sortedByDescending { it.name.lowercase() } //ordenar de forma descendiente
+    var isAscending by remember { mutableStateOf(true) } // Estado de orden de los pokemones
+
+    LaunchedEffect(Unit) {
+        viewModel.loadMorePokemon()
+    }
+
+    val gridState = rememberLazyGridState()
+    LaunchedEffect(gridState, pokemonList) {
+        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisible ->
+                if (lastVisible != null && lastVisible >= pokemonList.size - 4) {
+                    viewModel.loadMorePokemon()
                 }
             }
     }
 
+
+    val displayedPokemons by remember(searchText, isAscending) {
+        derivedStateOf {
+            val base = viewModel.pokemonList
+            val filtered = searchPokemon(searchText, base)
+            if (isAscending) {
+                filtered.sortedBy { it.name.lowercase() }
+            } else {
+                filtered.sortedByDescending { it.name.lowercase() }
+            }
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
-            OrderButton(isCurrentlyAscending = isAscending,
+            OrderButton(
+                isCurrentlyAscending = isAscending,
                 onClick = { isAscending = !isAscending}
             )
         }
@@ -88,6 +110,7 @@ fun HomeScreen(
                 )
             }else{
                 LazyVerticalGrid(
+                    state = gridState,
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),

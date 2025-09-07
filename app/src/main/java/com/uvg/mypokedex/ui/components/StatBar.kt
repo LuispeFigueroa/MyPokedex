@@ -18,8 +18,8 @@ fun Stats.StatBar(
     modifier: Modifier = Modifier,
     showPercent: Boolean = true
 ) {
-    val current = health
-    val max = maxHealth.coerceAtLeast(1)
+    val current = hpCurrent
+    val max = hp.coerceAtLeast(1)
     val ratio = (current.toFloat() / max.toFloat()).coerceIn(0f, 1f)
     val progress by animateFloatAsState(targetValue = ratio, label = "hpProgress")
 
