@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -32,10 +34,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.*
 
 fun searchPokemon(searchText: String, pokemonList: List<Pokemon>): List<Pokemon> {
-    if (searchText.isBlank()) {
-        return pokemonList
+    return if (searchText.isBlank()) {
+        pokemonList
     } else {
-        return pokemonList.filter { it.name.contains(searchText, ignoreCase = true) }
+        pokemonList.filter { it.name.contains(searchText, ignoreCase = true) }
     }
 }
 
@@ -63,7 +65,6 @@ fun HomeScreen(
             }
     }
 
-
     val displayedPokemons by remember(searchText, isAscending) {
         derivedStateOf {
             val base = viewModel.pokemonList
@@ -80,24 +81,23 @@ fun HomeScreen(
         floatingActionButton = {
             OrderButton(
                 isCurrentlyAscending = isAscending,
-                onClick = { isAscending = !isAscending}
+                onClick = { isAscending = !isAscending }
             )
         }
-    ){
-        innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()), // 👈 ahora toda la pantalla se puede scrollear
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             TextField(
                 value = searchText,
                 label = {
                     Text("Filtrar por nombre")
                 },
-                onValueChange = {
-                    newText ->
+                onValueChange = { newText ->
                     searchText = newText
                 }
             )
@@ -108,7 +108,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(16.dp),
                     text = "No se encontraron Pokemons"
                 )
-            }else{
+            } else {
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(2),
@@ -116,11 +116,11 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.weight(1f)
-                ){
+                ) {
                     items(
                         items = displayedPokemons,
-                        key = {pokemon -> pokemon.id}
-                    ){ p ->
+                        key = { pokemon -> pokemon.id }
+                    ) { p ->
                         PokemonCard(
                             pokemon = p,
                         )
