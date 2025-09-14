@@ -1,6 +1,5 @@
 package com.uvg.mypokedex.ui.components
 
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.DefaultTab.AlbumsTab.value
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.LinearProgressIndicator

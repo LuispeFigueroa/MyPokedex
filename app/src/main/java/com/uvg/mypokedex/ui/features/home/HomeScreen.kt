@@ -63,7 +63,6 @@ fun HomeScreen(
             }
     }
 
-
     val displayedPokemons by remember(searchText, isAscending) {
         derivedStateOf {
             val base = viewModel.pokemonList
