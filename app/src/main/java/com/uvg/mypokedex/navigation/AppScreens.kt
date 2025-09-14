@@ -1,9 +1,10 @@
 package com.uvg.mypokedex.navigation
 
-import com.uvg.mypokedex.data.model.Pokemon
 
-sealed class Screen {
-    data object HomeScreen : Screen()
-    data class DetailScreen(val pokemon: Pokemon) : Screen()
-    data object SearchToolsDialog : Screen()
+sealed class Screen(val route: String) {
+    object HomeScreen : Screen("home")
+    object DetailScreen : Screen("detail/{pokemonId}") {
+        fun createRoute(pokemonId: Int) = "detail/$pokemonId"
+    }
+    object SearchToolsDialog : Screen("searchTools")
 }

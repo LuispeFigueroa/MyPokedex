@@ -1,6 +1,8 @@
 package com.uvg.mypokedex.ui.features.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +48,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     favoriteIds: Set<Int>,
     onToggleFavorite: (Int) -> Unit,
+    onPokemonClick: (Int) -> Unit //
 ) {
     val pokemonList = viewModel.pokemonList
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -89,7 +92,7 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()), // 👈 ahora toda la pantalla se puede scrollear
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
@@ -123,6 +126,9 @@ fun HomeScreen(
                     ) { p ->
                         PokemonCard(
                             pokemon = p,
+                            onClick = { selectedPokemon ->
+                                onPokemonClick(selectedPokemon.id)  // 👈 usa el callback
+                            }
                         )
                     }
                 }

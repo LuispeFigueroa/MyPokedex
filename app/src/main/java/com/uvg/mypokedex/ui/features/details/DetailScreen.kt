@@ -21,7 +21,8 @@ import com.uvg.mypokedex.ui.components.TopBar
 fun DetailScreen(
     pokemon: Pokemon,
     isFavorite: Boolean,
-    onToggleFavorite: () -> Unit
+    onToggleFavorite: () -> Unit,
+    onBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -29,6 +30,7 @@ fun DetailScreen(
                 name = pokemon.name,
                 isFavorite = isFavorite,
                 onToggleFavorite = onToggleFavorite,
+                onBack = onBack
             )
         }
     ) { innerPadding ->
