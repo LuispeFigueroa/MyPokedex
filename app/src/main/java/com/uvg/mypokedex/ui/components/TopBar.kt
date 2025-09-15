@@ -17,15 +17,16 @@ import androidx.compose.runtime.Composable
 fun TopBar(
     name: String,
     isFavorite: Boolean,
-    onToggleFavorite: (() -> Unit)? = null
+    onToggleFavorite: (() -> Unit)? = null,
+    onBack: () -> Unit
 ) {
     TopAppBar(
         title = { Text(name) },
         navigationIcon = {
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = "Back icon"
-            )
+            IconButton(onClick = onBack){
+                Icon(Icons.Default.ArrowBack,
+                    contentDescription = "Back")
+            }
         },
         actions = {
             if (onToggleFavorite != null) {

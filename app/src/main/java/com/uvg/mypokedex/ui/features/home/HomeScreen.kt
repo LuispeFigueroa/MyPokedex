@@ -11,31 +11,37 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.unit.dp
-import com.uvg.mypokedex.data.model.Pokemon
-import com.uvg.mypokedex.ui.components.PokemonCard
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.uvg.mypokedex.ui.components.OrderButton
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.*
+import com.uvg.mypokedex.data.model.Pokemon
+import com.uvg.mypokedex.ui.components.OrderButton
+import com.uvg.mypokedex.ui.components.PokemonCard
 
 fun searchPokemon(searchText: String, pokemonList: List<Pokemon>): List<Pokemon> {
-    if (searchText.isBlank()) {
-        return pokemonList
+    return if (searchText.isBlank()) {
+        pokemonList
     } else {
-        return pokemonList.filter { it.name.contains(searchText, ignoreCase = true) }
+        pokemonList.filter { it.name.contains(searchText, ignoreCase = true) }
     }
 }
 
@@ -44,6 +50,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     favoriteIds: Set<Int>,
     onToggleFavorite: (Int) -> Unit,
+    onPokemonClick: (Int) -> Unit,
+    onSearchClick: ()-> Unit
 ) {
     val pokemonList = viewModel.pokemonList
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -79,25 +87,31 @@ fun HomeScreen(
         floatingActionButton = {
             OrderButton(
                 isCurrentlyAscending = isAscending,
-                onClick = { isAscending = !isAscending}
+                onClick = { isAscending = !isAscending }
             )
         }
-    ){
-        innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             TextField(
                 value = searchText,
                 label = {
                     Text("Filtrar por nombre")
                 },
-                onValueChange = {
-                    newText ->
+                onValueChange = { newText ->
                     searchText = newText
+                },
+                trailingIcon = {
+                    IconButton(onClick = onSearchClick){
+                        //el botoncito de ajustes permite abrir las herramientas
+
+                        Icon(Icons.Filled.Settings, contentDescription = "Herramientas de busqeuda")
+                    }
                 }
             )
 
@@ -107,7 +121,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(16.dp),
                     text = "No se encontraron Pokemons"
                 )
-            }else{
+            } else {
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(2),
@@ -115,13 +129,16 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.weight(1f)
-                ){
+                ) {
                     items(
                         items = displayedPokemons,
-                        key = {pokemon -> pokemon.id}
-                    ){ p ->
+                        key = { pokemon -> pokemon.id }
+                    ) { p ->
                         PokemonCard(
                             pokemon = p,
+                            onClick = { selectedPokemon ->
+                                onPokemonClick(selectedPokemon.id)  // 👈 usa el callback
+                            }
                         )
                     }
                 }
