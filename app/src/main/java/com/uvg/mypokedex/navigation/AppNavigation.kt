@@ -66,8 +66,8 @@ fun AppNavigation(
             SearchToolsDialog(
                 sortField = SortField.Numero,
                 sortOrder = SortOrder.Ascendente,
-                onSortFieldChange = { /* TODO */ },
-                onSortOrderChange = { /* TODO */ },
+                onSortFieldChange = { /* El lab aun no pide esta logica  */ },
+                onSortOrderChange = { /* EL lab aun no pide esta logica  */ },
                 onApply = { navController.popBackStack() },
                 onBack = { navController.popBackStack() }
             )
