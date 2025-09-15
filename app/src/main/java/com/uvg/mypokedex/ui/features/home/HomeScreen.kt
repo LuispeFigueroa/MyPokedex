@@ -15,6 +15,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -48,7 +52,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     favoriteIds: Set<Int>,
     onToggleFavorite: (Int) -> Unit,
-    onPokemonClick: (Int) -> Unit //
+    onPokemonClick: (Int) -> Unit,
+    onSearchClick: ()-> Unit
 ) {
     val pokemonList = viewModel.pokemonList
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -102,6 +107,13 @@ fun HomeScreen(
                 },
                 onValueChange = { newText ->
                     searchText = newText
+                },
+                trailingIcon = {
+                    IconButton(onClick = onSearchClick){
+                        //el botoncito de ajustes permite abrir las herramientas
+
+                        Icon(Icons.Filled.Settings, contentDescription = "Herramientas de busqeuda")
+                    }
                 }
             )
 
