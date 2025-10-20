@@ -1,4 +1,3 @@
-// app/src/main/java/com/uvg/mypokedex/navigation/AppNavigation.kt
 package com.uvg.mypokedex.navigation
 
 import androidx.compose.material3.Text
