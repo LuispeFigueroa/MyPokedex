@@ -33,9 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-enum class SortField { Numero, Nombre }
-enum class SortOrder { Ascendente, Descendente }
+import com.uvg.mypokedex.ui.state.SortField
+import com.uvg.mypokedex.ui.state.SortOrder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,14 +97,14 @@ fun SearchToolsDialog(
                 Column(Modifier.fillMaxWidth()) {
                     RadioRow(
                         text = "Número",
-                        selected = sortField == SortField.Numero,
-                        onClick = { onSortFieldChange(SortField.Numero) }
+                        selected = sortField == SortField.BY_NUMBER,
+                        onClick = { onSortFieldChange(SortField.BY_NUMBER) }
                     )
                     Divider()
                     RadioRow(
                         text = "Nombre",
-                        selected = sortField == SortField.Nombre,
-                        onClick = { onSortFieldChange(SortField.Nombre) }
+                        selected = sortField == SortField.BY_NAME,
+                        onClick = { onSortFieldChange(SortField.BY_NAME) }
                     )
                 }
             }
@@ -124,9 +123,9 @@ fun SearchToolsDialog(
                     SegmentedRow(
                         leftLabel = "Ascendente",
                         rightLabel = "Descendente",
-                        selectedLeft = (sortOrder == SortOrder.Ascendente),
-                        onLeft = { onSortOrderChange(SortOrder.Ascendente) },
-                        onRight = { onSortOrderChange(SortOrder.Descendente) }
+                        selectedLeft = (sortOrder == SortOrder.ASC),
+                        onLeft = { onSortOrderChange(SortOrder.ASC) },
+                        onRight = { onSortOrderChange(SortOrder.DESC) }
                     )
                 }
             }
