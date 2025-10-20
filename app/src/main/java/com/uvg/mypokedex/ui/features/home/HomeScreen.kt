@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.features.home
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -8,19 +9,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.uvg.mypokedex.data.model.Pokemon
+import com.uvg.mypokedex.data.repository.RepositoryProvider
 import com.uvg.mypokedex.ui.components.PokemonCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    vm: HomeViewModel = viewModel(),
     onPokemonClick: (Int) -> Unit
 ) {
+    val context = LocalContext.current
+    val repository = RepositoryProvider.pokemonRepository
+    val vm: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(
+            application = context.applicationContext as Application,
+            repository = repository
+        )
+    )
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val list = vm.pokemonList
 
