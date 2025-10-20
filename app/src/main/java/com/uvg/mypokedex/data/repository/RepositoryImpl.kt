@@ -1,26 +1,45 @@
 package com.uvg.mypokedex.data.repository
 
+import com.uvg.mypokedex.core.common.Result
+import com.uvg.mypokedex.core.network.ErrorMapper
+import com.uvg.mypokedex.data.remote.RemoteDataSource
+import com.uvg.mypokedex.data.remote.mapper.PokemonListItem
+import com.uvg.mypokedex.data.remote.mapper.toDomain
+import com.uvg.mypokedex.data.remote.mapper.toPokemon
+import com.uvg.mypokedex.data.remote.paging.PokemonPaging
 import com.uvg.mypokedex.data.model.Pokemon
-import com.uvg.mypokedex.data.remote.di.NetworkModule
-import com.uvg.mypokedex.data.remote.dto.toPokemon
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.Dispatchers
 
-class RepositoryImpl : PokemonRepository{
+class PokemonRepositoryImpl(
+    private val remote: RemoteDataSource
+) : PokemonRepository {
 
-    private val api = NetworkModule.pokemonApi
-
-    override suspend fun getPokemon(name: String): Result<Pokemon> {
-        return try{
-            //hace la llamada a la API para el pokemon
-            val pokemonDto = api.getPokemonDetail(name)
-
-            // si es exitosa se mapea al pokemon
-            val pokemon = pokemonDto.toPokemon()
-            // se guarda al pokemon con un wrap de succes, si no con un wrap de exception
-            Result.success(pokemon)
-            //si falla regresa exeption
-        }catch (e: Exception){
-            e.printStackTrace()
-            Result.failure(e)
+    override fun loadNextPage(currentCount: Int): Flow<Result<List<PokemonListItem>>> = flow {
+        emit(Result.Loading)
+        try {
+            val limit = PokemonPaging.PAGE_SIZE
+            val offset = PokemonPaging.nextOffset(currentCount)
+            val page = remote.fetchPokemonPage(limit, offset)
+            val items = page.results.map { it.toDomain() }
+            emit(Result.Success(items))
+        } catch (t: Throwable) {
+            val ui = ErrorMapper.toUiError(t)
+            emit(Result.Error(ui.message, t))
         }
-    }
+    }.flowOn(Dispatchers.IO)
+
+    override fun getPokemonDetail(nameOrId: String): Flow<Result<Pokemon>> = flow {
+        emit(Result.Loading)
+        try {
+            val dto = remote.fetchPokemonDetail(nameOrId)
+            val pokemon = dto.toPokemon()
+            emit(Result.Success(pokemon))
+        } catch (t: Throwable) {
+            val ui = ErrorMapper.toUiError(t)
+            emit(Result.Error(ui.message, t))
+        }
+    }.flowOn(Dispatchers.IO)
 }

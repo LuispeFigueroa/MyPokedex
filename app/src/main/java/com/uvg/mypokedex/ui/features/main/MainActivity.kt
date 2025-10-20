@@ -24,10 +24,7 @@ class MainActivity : ComponentActivity() {
                         if (contains(id)) remove(id) else add(id)
                     }
                 }
-                AppNavigation(
-                    favoriteIds = favoriteIds,
-                    onToggleFavorite = { id -> toggleFavorite(id) }
-                )
+                AppNavigation()
             }
         }
     }
