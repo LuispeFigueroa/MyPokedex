@@ -1,3 +1,4 @@
+// app/src/main/java/com/uvg/mypokedex/navigation/AppNavigation.kt
 package com.uvg.mypokedex.navigation
 
 import androidx.compose.material3.Text
@@ -7,15 +8,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.features.details.DetailScreen
+import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.features.search.SearchToolsDialog
 import com.uvg.mypokedex.ui.features.search.SortField
 import com.uvg.mypokedex.ui.features.search.SortOrder
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    favoriteIds: Set<Int>,
+    onToggleFavorite: (Int) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -38,8 +41,8 @@ fun AppNavigation(
 
             DetailScreen(
                 nameOrId = pokemonId,
-                isFavorite = false,
-                onToggleFavorite = { /* TODO favoritos */ },
+                isFavorite = favoriteIds.contains(pokemonId),
+                onToggleFavorite = { onToggleFavorite(pokemonId) },
                 onBack = { navController.popBackStack() }
             )
         }

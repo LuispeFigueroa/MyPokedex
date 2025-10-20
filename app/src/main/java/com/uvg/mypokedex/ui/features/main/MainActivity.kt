@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -17,14 +18,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyPokedexTheme {
-                var favoriteIds by rememberSaveable { mutableStateOf(setOf<Int>()) }
+                val favoriteIds = rememberSaveable { mutableStateListOf<Int>() }
 
                 fun toggleFavorite(id: Int) {
-                    favoriteIds = favoriteIds.toMutableSet().apply {
-                        if (contains(id)) remove(id) else add(id)
-                    }
+                    if (id in favoriteIds) favoriteIds.remove(id) else favoriteIds.add(id)
                 }
-                AppNavigation()
+                AppNavigation(
+                    favoriteIds = favoriteIds.toSet(),
+                    onToggleFavorite = { id -> toggleFavorite(id) }
+                )
             }
         }
     }
