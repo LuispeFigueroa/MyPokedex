@@ -13,7 +13,7 @@ data class Pokemon(
 )
 
 @Serializable
-data class Stats(
+    data class Stats(
     val hp: Int,
     val hpCurrent: Int = hp,
     val attack: Int,
