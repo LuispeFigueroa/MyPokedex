@@ -2,6 +2,7 @@ package com.uvg.mypokedex.data.repository
 
 import com.uvg.mypokedex.data.model.Pokemon
 import com.uvg.mypokedex.data.remote.dih.NetworkModule
+import com.uvg.mypokedex.data.remote.dto.toPokemon
 
 class RepositoryImpl : PokemonRepository{
 
