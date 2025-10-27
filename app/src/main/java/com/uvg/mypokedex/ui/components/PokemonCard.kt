@@ -35,7 +35,7 @@ fun PokemonCard(
   ) {
    AsyncImage(
 
-    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png",
+    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png",
     contentDescription = "Imagen de ${pokemon.name}",
     modifier = Modifier
      .fillMaxWidth()
