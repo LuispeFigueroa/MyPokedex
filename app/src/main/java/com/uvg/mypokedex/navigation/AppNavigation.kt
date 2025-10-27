@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import com.uvg.mypokedex.data.repository.RepositoryProvider
+import com.uvg.mypokedex.domain.sort.PokemonOrder
 import com.uvg.mypokedex.ui.features.details.DetailScreen
 import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
@@ -30,7 +30,6 @@ fun AppNavigation(
     val homeViewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(
             application = context.applicationContext as Application,
-            repository = RepositoryProvider.pokemonRepository
         )
     )
 
@@ -70,7 +69,23 @@ fun AppNavigation(
                 sortOrder = uiState.sortOrder,
                 onSortFieldChange = { homeViewModel.onSortFieldChanged(it) },
                 onSortOrderChange = { homeViewModel.onSortOrderChanged(it) },
-                onApply = { navController.popBackStack() },
+                onApply = {
+                    val selectedOrder = when {
+                        uiState.sortField == SortField.BY_NUMBER && uiState.sortOrder == SortOrder.ASC ->
+                            PokemonOrder.NUMBER_ASC
+                        uiState.sortField == SortField.BY_NUMBER && uiState.sortOrder == SortOrder.DESC ->
+                            PokemonOrder.NUMBER_DESC
+                        uiState.sortField == SortField.BY_NAME && uiState.sortOrder == SortOrder.ASC ->
+                            PokemonOrder.NAME_ASC
+                        uiState.sortField == SortField.BY_NAME && uiState.sortOrder == SortOrder.DESC ->
+                            PokemonOrder.NAME_DESC
+                        else -> PokemonOrder.NUMBER_ASC
+                    }
+
+                    homeViewModel.onOrderSelected(selectedOrder)
+
+                    navController.popBackStack()
+                },
                 onBack = { navController.popBackStack() }
             )
         }

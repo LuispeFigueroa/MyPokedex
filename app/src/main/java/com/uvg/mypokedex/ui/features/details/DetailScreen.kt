@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.features.details
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.uvg.mypokedex.ui.components.PokemonMeasurements
 import com.uvg.mypokedex.ui.components.PokemonStatRow
@@ -23,7 +23,12 @@ fun DetailScreen(
     onToggleFavorite: () -> Unit,
     onBack: () -> Unit
 ) {
-    val vm: PokemonDetailViewModel = viewModel()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val vm: PokemonDetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = PokemonDetailViewModelFactory(
+            application = context.applicationContext as Application
+        )
+    )
     val state by vm.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(nameOrId) {

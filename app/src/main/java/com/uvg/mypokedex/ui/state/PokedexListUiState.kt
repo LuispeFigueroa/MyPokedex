@@ -1,7 +1,5 @@
 package com.uvg.mypokedex.ui.state
 
-import com.uvg.mypokedex.data.model.Pokemon
-
 enum class SortField { BY_NUMBER, BY_NAME}
 enum class SortOrder { ASC, DESC }
 

@@ -33,8 +33,20 @@ fun HomeScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val list = vm.pokemonList
     var query by remember { mutableStateOf(TextFieldValue("")) }
+    val isConnected by vm.isConnected.collectAsState()
 
     val gridState = rememberLazyGridState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(isConnected) {
+        if (!isConnected) {
+            snackbarHostState.showSnackbar(
+                message = "Sin conexión. Modo offline.",
+                withDismissAction = false
+            )
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -46,6 +58,9 @@ fun HomeScreen(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         Column(

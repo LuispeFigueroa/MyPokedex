@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.uvg.mypokedex.core.common.Result
 import com.uvg.mypokedex.data.model.Pokemon
 import com.uvg.mypokedex.data.repository.PokemonRepository
-import com.uvg.mypokedex.data.repository.RepositoryProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +17,7 @@ data class PokemonDetailUiState(
 )
 
 class PokemonDetailViewModel(
-    private val repo: PokemonRepository = RepositoryProvider.pokemonRepository
+    private val repo: PokemonRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PokemonDetailUiState())
