@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 data class CachedPokemonDetailEntity(
     @PrimaryKey val id: Int,
     val name: String,
-    val height: Int,
-    val weight: Int,
+    val height: Float,
+    val weight: Float,
     val typesJson: String,
     val abilitiesJson: String,
     val statsJson: String,

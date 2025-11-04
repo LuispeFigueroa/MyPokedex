@@ -11,7 +11,7 @@ import com.uvg.mypokedex.data2.pokemon.local.entity.CachedPokemonSummaryEntity
 // Base de datos Room para la aplicación
 @Database(
     entities = [CachedPokemonSummaryEntity::class, CachedPokemonDetailEntity::class],
-    version = 1, exportSchema = false
+    version = 2, exportSchema = false
 )
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {

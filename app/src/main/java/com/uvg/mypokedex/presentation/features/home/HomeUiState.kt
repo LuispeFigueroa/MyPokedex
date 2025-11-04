@@ -14,7 +14,6 @@ data class HomeUiState(
     val endReached: Boolean = false,
     val order: SortOrder = SortOrder.ID_ASC
 ) {
-    val visibleItems: List<NamedItem> get() = items.take(visibleCount)
     val isEmpty: Boolean get() = !isLoadingInitial && items.isEmpty() && error == null
     val hasMoreLocally: Boolean get() = items.size > visibleCount
 }

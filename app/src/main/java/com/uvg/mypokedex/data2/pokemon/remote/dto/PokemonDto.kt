@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
 data class PokemonDto(
     val id: Int,                                            // Número del pokemon en la pokedex
     val name: String,                                       // Nombre del pokemon
-    val height: Int,                                        // Altura del pokemon en decímetros
-    val weight: Int,                                        // Peso del pokemon en hectogramos
+    val height: Float,                                      // Altura del pokemon en decímetros
+    val weight: Float,                                      // Peso del pokemon en hectogramos
     val types: List<PokemonTypeDto> = emptyList(),          // Tipos del pokemon (subDTO)
     val abilities: List<PokemonAbilityDto> = emptyList(),   // Habilidades del pokemon (subDTO)
     val stats: List<PokemonStatDto> = emptyList()           // Stats del pokemon (subDTO)

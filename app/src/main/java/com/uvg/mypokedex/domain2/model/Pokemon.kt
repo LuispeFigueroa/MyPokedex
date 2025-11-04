@@ -1,13 +1,14 @@
 package com.uvg.mypokedex.domain2.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // Clase modelo de la información de un pokemon
 data class Pokemon(
     val id: Int,                            // Número del pokemon en la pokedex
     val name: String,                       // Nombre del pokemon
-    val height: Int,                        // Altura del pokemon en decímetros
-    val weight: Int,                        // Peso del pokemon en hectogramos
+    val height: Float,                      // Altura del pokemon en decímetros
+    val weight: Float,                      // Peso del pokemon en hectogramos
     val types: List<PokemonType>,           // Tipos del pokemon (subclase)
     val abilities: List<PokemonAbility>,    // Habilidades del pokemon (subclase)
     val stats: List<PokemonStat>,           // Stats del pokemon (subclase)
@@ -29,6 +30,7 @@ data class PokemonType(
 // Subclase para una habilidad de un pokemon
 @Serializable
 data class PokemonAbility(
+    @SerialName("is_hidden")
     val isHidden: Boolean,   // Si la habilidad es oculta
     val ability: NamedItem,  // Habilidad (tiene nombre y URL)
 )
@@ -36,6 +38,7 @@ data class PokemonAbility(
 // Subclase para una stat de un pokemon
 @Serializable
 data class PokemonStat(
+    @SerialName("base_stat")
     val baseStat: Int,    // Valor de la stat
     val stat: NamedItem   // Stat (tiene nombre y URL)
 )
