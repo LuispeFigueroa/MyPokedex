@@ -56,7 +56,6 @@ fun AppNavigation() {
             val detailVm: DetailViewModel = viewModel(
                 factory = DetailViewModelFactory(repo, id = id)
             )
-            val state by detailVm.state.collectAsState()
 
             DetailScreen(
                 viewModel = detailVm,
