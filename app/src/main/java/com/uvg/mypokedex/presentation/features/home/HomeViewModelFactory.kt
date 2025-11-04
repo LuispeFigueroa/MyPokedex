@@ -2,7 +2,7 @@ package com.uvg.mypokedex.presentation.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.uvg.mypokedex.domain2.repo.PokemonRepository
+import com.uvg.mypokedex.domain.repo.PokemonRepository
 
 // Factory para crear un HomeViewModel
 class HomeViewModelFactory(

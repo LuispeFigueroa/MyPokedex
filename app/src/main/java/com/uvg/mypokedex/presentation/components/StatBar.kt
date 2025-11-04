@@ -6,7 +6,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.uvg.mypokedex.domain2.model.PokemonStat
+import com.uvg.mypokedex.domain.model.PokemonStat
 import com.uvg.mypokedex.presentation.features.detail.StatMax.maxFor
 
 // Función de extensión para mostrar la barra de progreso de una stat

@@ -2,8 +2,8 @@ package com.uvg.mypokedex.presentation.features.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.uvg.mypokedex.domain2.common.AppError
-import com.uvg.mypokedex.domain2.repo.PokemonRepository
+import com.uvg.mypokedex.domain.common.AppError
+import com.uvg.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

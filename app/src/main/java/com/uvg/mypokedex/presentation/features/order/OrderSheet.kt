@@ -27,7 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.uvg.mypokedex.data2.pokemon.prefs.SortOrder
+import com.uvg.mypokedex.data.pokemon.prefs.SortOrder
 
 // Clase de ayuda para ordenar por nombre/número
 enum class SortField { Number, Name }
@@ -39,7 +39,7 @@ fun OrderSheet(
     onApply: (SortOrder) -> Unit,
     onCancel: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var field by remember(current) { mutableStateOf(current.toField()) }
     var ascending by remember(current) { mutableStateOf(current.isAscending()) }
 

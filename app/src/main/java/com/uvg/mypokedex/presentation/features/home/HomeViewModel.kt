@@ -2,10 +2,10 @@ package com.uvg.mypokedex.presentation.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.uvg.mypokedex.data2.pokemon.constants.PokemonConstants.PAGE_SIZE
-import com.uvg.mypokedex.data2.pokemon.prefs.SortOrder
-import com.uvg.mypokedex.domain2.common.AppError
-import com.uvg.mypokedex.domain2.repo.PokemonRepository
+import com.uvg.mypokedex.data.pokemon.constants.PokemonConstants.PAGE_SIZE
+import com.uvg.mypokedex.data.pokemon.prefs.SortOrder
+import com.uvg.mypokedex.domain.common.AppError
+import com.uvg.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +32,8 @@ class HomeViewModel(
     )
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
+    // Variable para no spamear llamadas a la API mientras se está offline
+    private var lastLoadAttemptAt = 0L
 
     init {
         // Suscribirse a la lista completa en caché (ordenada por DataStore) y reflejarla en UI
@@ -44,7 +46,10 @@ class HomeViewModel(
                 .catch { t ->
                     // Si el flujo falla, mostrar error y salir de "loading inicial"
                     val err = (t as? AppError) ?: AppError.Unknown(t)
-                    _state.update { it.copy(isLoadingInitial = false, error = err) }
+                    _state.update { it.copy(
+                        isLoadingInitial = false,
+                        error = err)
+                    }
                 }
                 .collect { list ->
                     // Collect del flow, si llegan nuevos pokemons, la UI se actualiza sola
@@ -105,6 +110,13 @@ class HomeViewModel(
 
     // Mostrar más pokemons de la caché (si es que hay)
     fun showMoreLocallyOrLoad() {
+        val now = System.currentTimeMillis()
+
+        // Evita reintentos demasiado frecuentes si ya estamos en error Offline
+        val skipForCooldown = (state.value.error is AppError.Offline) && (now - lastLoadAttemptAt < 1500)
+        if (skipForCooldown) return
+        lastLoadAttemptAt = now
+
         val snapshot = state.value
         when {
             snapshot.hasMoreLocally -> {

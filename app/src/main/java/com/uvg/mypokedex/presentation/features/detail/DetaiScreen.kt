@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.uvg.mypokedex.domain2.model.Pokemon
+import com.uvg.mypokedex.domain.model.Pokemon
 import com.uvg.mypokedex.presentation.components.PokemonMeasurements
 import com.uvg.mypokedex.presentation.components.PokemonSpecifics
 import com.uvg.mypokedex.presentation.components.PokemonStatRow

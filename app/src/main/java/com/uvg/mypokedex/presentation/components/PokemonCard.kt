@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.uvg.mypokedex.domain2.model.NamedItem
+import com.uvg.mypokedex.domain.model.NamedItem
 
 @Composable
 fun PokemonCard(

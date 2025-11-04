@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.uvg.mypokedex.domain2.model.PokemonStat
+import com.uvg.mypokedex.domain.model.PokemonStat
 
 @Composable
 fun PokemonStatRow(stat: PokemonStat) {
