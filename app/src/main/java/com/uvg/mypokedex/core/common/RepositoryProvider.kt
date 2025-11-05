@@ -3,17 +3,24 @@ package com.uvg.mypokedex.core.common
 import android.app.Application
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.uvg.mypokedex.core.network.NetworkClient
 import com.uvg.mypokedex.core.network.monitor.DefaultNetworkMonitor
 import com.uvg.mypokedex.core.network.monitor.NetworkMonitor
+import com.uvg.mypokedex.data.auth.repo.AuthRepositoryImpl
+import com.uvg.mypokedex.data.favorites.repo.FavoritesRepositoryImpl
 import com.uvg.mypokedex.data.pokemon.local.PokemonLocalDataSource
 import com.uvg.mypokedex.data.pokemon.local.db.AppDatabase
 import com.uvg.mypokedex.data.pokemon.prefs.PokemonSortOrderDataSource
 import com.uvg.mypokedex.data.pokemon.remote.PokemonRemoteDataSource
 import com.uvg.mypokedex.data.pokemon.remote.api.PokemonApiService
 import com.uvg.mypokedex.data.pokemon.repo.PokemonRepositoryImpl
+import com.uvg.mypokedex.domain.repo.AuthRepository
+import com.uvg.mypokedex.domain.repo.FavoritesRepository
 import com.uvg.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.Dispatchers
+import kotlin.getValue
 
 object RepositoryProvider {
     // Init
@@ -61,6 +68,38 @@ object RepositoryProvider {
 
     // Función que expone el monitor de conexión
     fun provideNetworkMonitor(): NetworkMonitor = networkMonitor
+
+    // Firestore singleton
+    private val firestore by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        FirebaseFirestore.getInstance()
+    }
+
+    // Función que expone Firestore
+    fun provideFirestore(): FirebaseFirestore = firestore
+
+    // FirebaseAuth singleton
+    private val firebaseAuth by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        FirebaseAuth.getInstance()
+    }
+
+    // Función que expone Firebase
+    fun provideFirebaseAuth(): FirebaseAuth = firebaseAuth
+
+    // AuthRepository singleton
+    private val authRepo by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        AuthRepositoryImpl(firebaseAuth)
+    }
+
+    // Función que expone AuthRepository
+    fun provideAuthRepository(): AuthRepository = authRepo
+
+    // FavoritesRepository Singleton
+    private val favoritesRepo by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        FavoritesRepositoryImpl(firestore = firestore, authRepo = authRepo)
+    }
+
+    // Función que expone FavoritesRepository
+    fun provideFavoritesRepository(): FavoritesRepository = favoritesRepo
 
     /*
     REPOSITORIOS

@@ -26,12 +26,14 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.uvg.mypokedex.core.common.RepositoryProvider
 import com.uvg.mypokedex.domain.model.Pokemon
 import com.uvg.mypokedex.presentation.components.PokemonMeasurements
 import com.uvg.mypokedex.presentation.components.PokemonSpecifics
@@ -41,11 +43,30 @@ import com.uvg.mypokedex.presentation.components.PokemonStatRow
 @Composable
 fun DetailScreen(
     viewModel: DetailViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onRequireLogin: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val pokemon: Pokemon? = state.pokemon
     val currentError = state.error
+
+    // Atrapar evento
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { evt ->
+            when (evt) {
+                // Navegar al diálogo de login cuando se requiera
+                is DetailEvent.RequireLogin -> onRequireLogin()
+            }
+        }
+    }
+
+    // Manejamos favorito pendiente, si lo hay
+    val isSignedIn = RepositoryProvider.provideAuthRepository().isSignedIn()
+    LaunchedEffect(isSignedIn) {
+        if (isSignedIn) {
+            viewModel.retryPendingFavorite()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -53,17 +74,29 @@ fun DetailScreen(
                 title = { Text(pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "Pokemon Detail") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back",
+                            modifier = Modifier.size(35.dp)
+                        )
                     }
                 },
                 actions = {
                     // Botón de favorito solo cuando hay data
                     if (pokemon != null) {
-                        IconButton(onClick = { viewModel.toggleFavorite() }) {
+                        IconButton(onClick = { viewModel.onFavoriteClick() }) {
                             if (state.isFavorite) {
-                                Icon(Icons.Filled.Favorite, contentDescription = "Remove Favorite")
+                                Icon(
+                                    Icons.Filled.Favorite,
+                                    contentDescription = "Remove Favorite",
+                                    modifier = Modifier.size(36.dp)
+                                )
                             } else {
-                                Icon(Icons.Outlined.FavoriteBorder, contentDescription = "Add as favorite")
+                                Icon(
+                                    Icons.Outlined.FavoriteBorder,
+                                    contentDescription = "Add as favorite",
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
                         }
                     }
