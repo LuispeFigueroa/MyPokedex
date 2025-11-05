@@ -1,10 +1,8 @@
 package com.uvg.mypokedex.navigation
 
-
-sealed class Screen(val route: String) {
-    object HomeScreen : Screen("home")
-    object DetailScreen : Screen("detail/{pokemonId}") {
-        fun createRoute(pokemonId: Int) = "detail/$pokemonId"
-    }
-    object SearchToolsDialog : Screen("searchTools")
+object AppScreens {
+    const val HOME = "home"
+    const val DETAIL = "detail/{id}"
+    fun detail(id: Int) = "detail/$id"
+    const val ORDER = "order"
 }
