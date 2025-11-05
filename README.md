@@ -1,3 +1,9 @@
-README
-![MyPokedex – AppNavigation kt  MyPokedex app main  2025-10-26 20-11-32](https://github.com/user-attachments/assets/34189a36-4c0a-4f39-b4f8-adb86dc1d2e8)
-![1026](https://github.com/user-attachments/assets/0a83899b-ba7a-4236-bb21-6ed1ace296f4)
+GIFS LAB 12
+Datos se actualizan correctamente al recuperar conexión
+![1104 (1)](https://github.com/user-attachments/assets/5008933a-6486-4801-bd81-528003bdc2dd)
+
+Al abrir la app sin conexión se muestran los pokemones vistos previamente
+![1104 (1)(1)](https://github.com/user-attachments/assets/3625a0b7-4d1c-41ec-bad6-9992228894d8)
+
+Al cambiar el tipo de orden la lista se actualiza y se mantiene esa configuración al cerrar y volver a abrir
+![1104 (1)(2)](https://github.com/user-attachments/assets/6bc9f8ef-b2d3-4c26-b05c-92a07778b24d)
