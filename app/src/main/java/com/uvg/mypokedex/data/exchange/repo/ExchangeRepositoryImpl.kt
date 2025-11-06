@@ -15,7 +15,7 @@ class ExchangeRepositoryImpl(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth
 ): ExchangeRepository {
-    private fun uid(): String = requireNotNull(auth.currentUser?.uid) { "Not signed in" }
+    private fun uid(): String = requireNotNull(auth.currentUser?.uid) { "Not signed in. Add a pokemon as favorite to sign in." }
     private fun exchanges() = db.collection("exchanges")
     private fun userFavs(uid: String) = db.collection("users").document(uid).collection("favorites")
 
@@ -67,8 +67,8 @@ class ExchangeRepositoryImpl(
             val offerA = data["offerA"] as Map<*, *>
             val offerB = data["offerB"] as? Map<*, *>
 
-            val resolvedB = when {
-                existingB == null -> {
+            val resolvedB = when (existingB) {
+                null -> {
                     trx.update(
                         ref,
                         mapOf(
@@ -79,7 +79,7 @@ class ExchangeRepositoryImpl(
                     )
                     currentUid
                 }
-                existingB == currentUid -> currentUid // ya estaba unido (idempotente)
+                currentUid -> currentUid
                 else -> error("This exchange already has two participants")
             }
 
