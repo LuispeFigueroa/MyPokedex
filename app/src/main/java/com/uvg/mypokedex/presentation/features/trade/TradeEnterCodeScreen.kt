@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,7 +53,8 @@ fun TradeEnterCodeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
                 value = code,
