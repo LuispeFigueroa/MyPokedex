@@ -9,6 +9,7 @@ import com.uvg.mypokedex.core.network.NetworkClient
 import com.uvg.mypokedex.core.network.monitor.DefaultNetworkMonitor
 import com.uvg.mypokedex.core.network.monitor.NetworkMonitor
 import com.uvg.mypokedex.data.auth.repo.AuthRepositoryImpl
+import com.uvg.mypokedex.data.exchange.repo.ExchangeRepositoryImpl
 import com.uvg.mypokedex.data.favorites.repo.FavoritesRepositoryImpl
 import com.uvg.mypokedex.data.pokemon.local.PokemonLocalDataSource
 import com.uvg.mypokedex.data.pokemon.local.db.AppDatabase
@@ -17,6 +18,7 @@ import com.uvg.mypokedex.data.pokemon.remote.PokemonRemoteDataSource
 import com.uvg.mypokedex.data.pokemon.remote.api.PokemonApiService
 import com.uvg.mypokedex.data.pokemon.repo.PokemonRepositoryImpl
 import com.uvg.mypokedex.domain.repo.AuthRepository
+import com.uvg.mypokedex.domain.repo.ExchangeRepository
 import com.uvg.mypokedex.domain.repo.FavoritesRepository
 import com.uvg.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.Dispatchers
@@ -100,6 +102,17 @@ object RepositoryProvider {
 
     // Función que expone FavoritesRepository
     fun provideFavoritesRepository(): FavoritesRepository = favoritesRepo
+
+    // ExchangeRepository Singleton
+    private val exchangeRepo by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        ExchangeRepositoryImpl(
+            db = firestore,
+            auth = firebaseAuth
+        )
+    }
+
+    // Función que expone ExchangeRepository
+    fun provideExchangeRepository(): ExchangeRepository = exchangeRepo
 
     /*
     REPOSITORIOS

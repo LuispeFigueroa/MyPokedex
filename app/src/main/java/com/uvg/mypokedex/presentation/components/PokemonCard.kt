@@ -19,8 +19,7 @@ fun PokemonCard(
     favorite: FavoritePokemon? = null,
     onClick: (Int) -> Unit = {}
 ) {
-    var pokemon: NamedItem? = null
-    pokemon = if (favorite != null) {
+    val pokemon: NamedItem? = if (favorite != null) {
         NamedItem(favorite.name, "https://pokeapi.co/api/v2/pokemon/${favorite.id}/")
     } else {
         item

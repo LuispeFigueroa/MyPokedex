@@ -30,7 +30,9 @@ fun TradeSelectScreen(
     onPokemonSelected: (id: Int, name: String) -> Unit
 ) {
     // Tomamos favoritos del view model
-    val favorites by viewModel.favorites.collectAsStateWithLifecycle()
+    val favorites by viewModel.favorites.collectAsStateWithLifecycle(initialValue = emptyList())
+
+    android.util.Log.d("TradeSelectUI", "render favorites size=${favorites.size}")
 
     Scaffold(
         topBar = {

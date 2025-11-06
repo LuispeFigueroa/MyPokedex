@@ -77,7 +77,7 @@ fun DetailScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Go back",
-                            modifier = Modifier.size(35.dp)
+                            modifier = Modifier.size(40.dp)
                         )
                     }
                 },

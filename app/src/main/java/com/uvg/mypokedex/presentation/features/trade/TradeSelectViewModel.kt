@@ -6,13 +6,18 @@ import com.uvg.mypokedex.domain.model.FavoritePokemon
 import com.uvg.mypokedex.domain.repo.FavoritesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class TradeSelectViewModel(
-    private val repo: FavoritesRepository
+    private val favoritesRepo: FavoritesRepository
 ): ViewModel() {
     val favorites: StateFlow<List<FavoritePokemon>> =
-        repo.observeFavorites()
+        favoritesRepo.observeFavorites()
+            .onEach { list ->
+                android.util.Log.d("TradeSelectVM", "observeFavorites emitted size=${list.size}, values=$list")
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),

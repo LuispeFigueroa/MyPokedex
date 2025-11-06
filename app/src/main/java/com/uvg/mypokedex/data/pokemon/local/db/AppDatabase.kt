@@ -9,7 +9,7 @@ import com.uvg.mypokedex.data.pokemon.local.entity.CachedPokemonSummaryEntity
 // Base de datos Room para la aplicación
 @Database(
     entities = [CachedPokemonSummaryEntity::class, CachedPokemonDetailEntity::class],
-    version = 6, exportSchema = false
+    version = 9, exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao

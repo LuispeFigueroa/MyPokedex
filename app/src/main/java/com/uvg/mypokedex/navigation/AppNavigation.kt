@@ -40,6 +40,8 @@ import com.uvg.mypokedex.presentation.features.trade.TradeHomeScreen
 import com.uvg.mypokedex.presentation.features.trade.TradeSelectScreen
 import com.uvg.mypokedex.presentation.features.trade.TradeSelectViewModel
 import com.uvg.mypokedex.presentation.features.trade.TradeSelectViewModelFactory
+import com.uvg.mypokedex.presentation.features.trade.TradeViewModel
+import com.uvg.mypokedex.presentation.features.trade.TradeViewModelFactory
 import com.uvg.mypokedex.presentation.features.trade.TradeShowCodeScreen
 
 // Clase de ayuda para la BottomBar
@@ -50,6 +52,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val pokeRepo = remember { RepositoryProvider.providePokemonRepository() }
     val faveRepo = remember { RepositoryProvider.provideFavoritesRepository()  }
+    val exchangeRepo = remember { RepositoryProvider.provideExchangeRepository() }
+
 
     val items = listOf(
         BottomItem(AppScreens.HOME, "Home", Icons.Filled.Home),
@@ -153,7 +157,14 @@ fun AppNavigation() {
             }
 
             // Pantalla para seleccionar un pokemon para tradear
-            composable(AppScreens.TRADE_SELECT) {
+            composable(AppScreens.TRADE_SELECT) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(AppScreens.TRADE)
+                }
+                val tradeVm: TradeViewModel = viewModel(
+                    parentEntry,
+                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
+                )
                 val tradeSelectVm: TradeSelectViewModel = viewModel(
                     factory = TradeSelectViewModelFactory(faveRepo)
                 )
@@ -162,15 +173,32 @@ fun AppNavigation() {
                     viewModel = tradeSelectVm,
                     onBack = { navController.popBackStack() },
                     onPokemonSelected = { id, name ->
-                        navController.navigate(AppScreens.showCode(id, name))
+                        // Si hay un exchangeId activo en VM, actúa como B (finalizar trade)
+                        val exId = tradeVm.state.value.exchangeId
+                        if (exId != null) {
+                            tradeVm.commitWithOfferB(id, name) {
+                                navController.popBackStack(AppScreens.TRADE, inclusive = false)
+                            }
+                        } else {
+                            // Si no hay exchange activo, actúa como A (ir a ShowCode)
+                            navController.navigate(AppScreens.showCode(id, name))
+                        }
                     }
                 )
             }
 
             // Pantalla que muestra código generado para tradear un pokemon
-            composable(AppScreens.TRADE_SHOW_CODE) { entry ->
-                val id = entry.arguments?.getString("pokemonId")?.toIntOrNull() ?: 0
-                val name = entry.arguments?.getString("pokemonName") ?: "Unknown"
+            composable(AppScreens.TRADE_SHOW_CODE) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(AppScreens.TRADE)
+                }
+                val tradeVm: TradeViewModel = viewModel(
+                    parentEntry,
+                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
+                )
+
+                val id = backStackEntry.arguments?.getString("pokemonId")?.toIntOrNull() ?: 0
+                val name = backStackEntry.arguments?.getString("pokemonName") ?: "Unknown"
                 TradeShowCodeScreen(
                     pokemonId = id,
                     pokemonName = name,
@@ -179,8 +207,20 @@ fun AppNavigation() {
             }
 
             // Pantalla para ingresar código para tradear un pokemon
-            composable(AppScreens.TRADE_ENTER_CODE) {
-                TradeEnterCodeScreen(onBack = { navController.popBackStack() })
+            composable(AppScreens.TRADE_ENTER_CODE) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(AppScreens.TRADE)
+                }
+                val tradeVm: TradeViewModel = viewModel(
+                    parentEntry,
+                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
+                )
+
+                TradeEnterCodeScreen(
+                    viewModel = tradeVm,
+                    onBack = { navController.popBackStack() },
+                    onJoinedGoSelect = { navController.navigate(AppScreens.TRADE_SELECT) }
+                )
             }
         }
     }

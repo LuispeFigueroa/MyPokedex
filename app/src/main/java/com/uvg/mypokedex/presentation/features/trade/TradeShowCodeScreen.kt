@@ -16,22 +16,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TradeShowCodeScreen(
+    vm: TradeViewModel = viewModel(),
     pokemonId: Int,
     pokemonName: String,
     onBack: () -> Unit
 ) {
-    // Placeholder: generamos un código bonito (6 letras/números)
-    val code by remember { mutableStateOf("codigo") }
+    // Creamos el Exchange
+    val ui = vm.state.collectAsState()
+    LaunchedEffect(pokemonId, pokemonName) {
+        if (ui.value.exchangeId == null) {
+            vm.createExchangeWithOfferA(pokemonId, pokemonName)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -44,11 +50,11 @@ fun TradeShowCodeScreen(
                 }
             )
         }
-    ) { inner ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(inner)
+                .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -56,12 +62,18 @@ fun TradeShowCodeScreen(
             Text("#$pokemonId — $pokemonName")
 
             Spacer(Modifier.height(12.dp))
-            Text("Give this code to your partner:", style = MaterialTheme.typography.titleMedium)
-            Text(
-                text = code,
-                style = MaterialTheme.typography.headlineMedium,
-                fontFamily = FontFamily.Monospace
-            )
+            when {
+                ui.value.isBusy -> Text("Generating code…")
+                ui.value.error != null -> Text(ui.value.error ?: "Error", color = MaterialTheme.colorScheme.error)
+                else -> {
+                    Text("Give this code to your partner:", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = ui.value.code ?: "------",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+            }
         }
     }
 }

@@ -72,8 +72,8 @@ fun HomeScreen(
         else state.items.filter { it.name.contains(query.trim(), ignoreCase = true) }
     }
 
-    val visibleFiltered = remember(filteredItems, state.visibleCount) {
-        filteredItems.take(state.visibleCount)
+    val visibleFiltered = remember(filteredItems, state.visibleCount, query) {
+        if (query.isBlank()) filteredItems.take(state.visibleCount) else filteredItems
     }
 
     Scaffold(
@@ -182,9 +182,11 @@ fun HomeScreen(
                                     .padding(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                when {
-                                    state.isLoadingMore -> CircularProgressIndicator()
-                                    state.endReached     -> Text("No more pokemon left")
+                                if (query.isBlank()) {
+                                    when {
+                                        state.isLoadingMore -> CircularProgressIndicator()
+                                        state.endReached     -> Text("No more pokemon left")
+                                    }
                                 }
                             }
                             Spacer(Modifier.height(16.dp))
@@ -210,7 +212,7 @@ fun HomeScreen(
     }
 
     // Umbral de estar "cerca del final" de la página
-    val prefetchThreshold = 6
+    val prefetchThreshold = 2
 
     // Detector de estar "cerca del final" de la página
     LaunchedEffect(
@@ -219,6 +221,7 @@ fun HomeScreen(
         state.endReached,
         state.isLoadingInitial,
         visibleFiltered.size,
+        query
     ) {
         snapshotFlow {
             val info = gridState.layoutInfo
@@ -232,7 +235,7 @@ fun HomeScreen(
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                if (!state.isLoadingMore && !state.endReached && !state.isLoadingInitial) {
+                if (query.isBlank() && !state.isLoadingMore && !state.endReached && !state.isLoadingInitial) {
                     viewModel.showMoreLocallyOrLoad()
                 }
             }
