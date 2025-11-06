@@ -19,8 +19,10 @@ class FavoritesRepositoryImpl(
 ): FavoritesRepository {
     // Revisa si el usuario realmente está autenticado
     private fun uidOrThrow(): String {
-        require(authRepo.isSignedIn()) { "Not signed in" }
-        return FirebaseAuth.getInstance().currentUser!!.uid
+        if (authRepo.isSignedIn()) {
+            return FirebaseAuth.getInstance().currentUser!!.uid
+        }
+        throw IllegalStateException("User not signed in")
     }
 
     // Es la "ruta" o referencia a los favoritos del usuario
