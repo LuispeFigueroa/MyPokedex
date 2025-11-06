@@ -77,4 +77,22 @@ class TradeViewModel(
             }
         }
     }
+
+    // Cancelar un trade activo
+    fun cancelActive(onCanceled: () -> Unit = {}) {
+        val exId = _state.value.exchangeId ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isBusy = true, error = null) }
+            val r = exchangeRepo.cancelExchange(exId)
+            _state.update { s ->
+                r.fold(
+                    onSuccess = {
+                        onCanceled()
+                        TradeUiState()
+                    },
+                    onFailure = { e -> s.copy(isBusy = false, error = e.message ?: "Cancel failed") }
+                )
+            }
+        }
+    }
 }

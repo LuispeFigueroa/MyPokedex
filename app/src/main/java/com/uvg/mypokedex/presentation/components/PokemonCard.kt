@@ -25,7 +25,7 @@ fun PokemonCard(
         item
     }
 
-    val id = item?.idFromUrl() ?: return
+    val id = pokemon?.idFromUrl() ?: return
     val sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
 
     val cardColor = MaterialTheme.colorScheme.surfaceVariant
@@ -45,14 +45,14 @@ fun PokemonCard(
         ) {
             AsyncImage(
                 model = sprite,
-                contentDescription = "Imagen de ${pokemon?.name}",
+                contentDescription = "Imagen de ${pokemon.name}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
                 contentScale = ContentScale.Fit
             )
 
-            pokemon?.name?.replaceFirstChar { it.uppercase() }?.let {
+            pokemon.name.replaceFirstChar { it.uppercase() }.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.titleMedium,

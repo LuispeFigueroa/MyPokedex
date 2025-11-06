@@ -15,4 +15,7 @@ interface ExchangeRepository {
 
     // Función que observa los cambios en un Exchange
     fun observeExchange(exchangeId: String): Flow<Exchange?>
+
+    // Función para cancelar un Exchange activo
+    fun cancelExchange(exchangeId: String): Result<Unit>
 }

@@ -149,8 +149,16 @@ fun AppNavigation() {
             }
 
             // Pantalla principal de Trade
-            composable(AppScreens.TRADE) {
+            composable(AppScreens.TRADE) { backStackEntry ->
+                val tradeVm: TradeViewModel = viewModel(
+                    backStackEntry,
+                    factory = TradeViewModelFactory(
+                        exchangeRepo
+                    )
+                )
+
                 TradeHomeScreen(
+                    viewModel = tradeVm,
                     onSelectFromFavorites = { navController.navigate(AppScreens.TRADE_SELECT) },
                     onEnterCode = { navController.navigate(AppScreens.TRADE_ENTER_CODE) }
                 )
@@ -200,9 +208,11 @@ fun AppNavigation() {
                 val id = backStackEntry.arguments?.getString("pokemonId")?.toIntOrNull() ?: 0
                 val name = backStackEntry.arguments?.getString("pokemonName") ?: "Unknown"
                 TradeShowCodeScreen(
+                    viewModel = tradeVm,
                     pokemonId = id,
                     pokemonName = name,
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onDone = { navController.popBackStack(AppScreens.TRADE, inclusive = false) }
                 )
             }
 

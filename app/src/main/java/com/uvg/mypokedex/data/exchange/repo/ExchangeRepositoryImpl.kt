@@ -163,4 +163,44 @@ class ExchangeRepositoryImpl(
             }
         awaitClose { reg.remove() }
     }
+
+    // Función para cancelar un Exchange activo
+    override fun cancelExchange(exchangeId: String): Result<Unit> = runCatching {
+        val currentUid = uid()
+
+        // Bloquea solo este bloque para poder usar .await() sin cambiar la firma
+        kotlinx.coroutines.runBlocking {
+            db.runTransaction { trx ->
+                val exRef = exchanges().document(exchangeId)
+                val snap = trx.get(exRef)
+                if (!snap.exists()) error("Exchange not found")
+
+                val data = snap.data!!
+                val userA = data["userA"] as String
+                val userB = data["userB"] as? String
+                val status = Exchange.Status.valueOf(data["status"] as String)
+
+                // Solo participantes pueden cancelar
+                if (currentUid != userA && currentUid != userB) error("Only participants can cancel")
+
+                // Si ya está cerrado o previamente cancelado/expirado, no hacemos nada
+                when (status) {
+                    Exchange.Status.COMMITTED -> error("Already committed")
+                    Exchange.Status.CANCELLED,
+                    Exchange.Status.EXPIRED -> return@runTransaction null
+                    else -> { /* se puede cancelar */ }
+                }
+
+                // Marcar como CANCELLED
+                trx.update(
+                    exRef,
+                    mapOf(
+                        "status" to Exchange.Status.CANCELLED.name,
+                        "cancelledAt" to Timestamp.now()
+                    )
+                )
+                null
+            }.await()
+        }
+    }
 }

@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class TradeSelectViewModel(
-    private val favoritesRepo: FavoritesRepository
+    favoritesRepo: FavoritesRepository
 ): ViewModel() {
     val favorites: StateFlow<List<FavoritePokemon>> =
         favoritesRepo.observeFavorites()
@@ -20,7 +19,7 @@ class TradeSelectViewModel(
             }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.Eagerly,
                 initialValue = emptyList()
             )
 }
