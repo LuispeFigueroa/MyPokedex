@@ -4,15 +4,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +41,7 @@ import com.uvg.mypokedex.presentation.features.home.HomeViewModel
 import com.uvg.mypokedex.presentation.features.home.HomeViewModelFactory
 import com.uvg.mypokedex.presentation.features.order.OrderSheet
 import com.uvg.mypokedex.presentation.features.trade.TradeEnterCodeScreen
+import com.uvg.mypokedex.presentation.features.trade.TradeEvent
 import com.uvg.mypokedex.presentation.features.trade.TradeHomeScreen
 import com.uvg.mypokedex.presentation.features.trade.TradeSelectScreen
 import com.uvg.mypokedex.presentation.features.trade.TradeSelectViewModel
@@ -53,7 +59,22 @@ fun AppNavigation() {
     val pokeRepo = remember { RepositoryProvider.providePokemonRepository() }
     val faveRepo = remember { RepositoryProvider.provideFavoritesRepository()  }
     val exchangeRepo = remember { RepositoryProvider.provideExchangeRepository() }
+    val tradeVm: TradeViewModel = viewModel(
+        factory = TradeViewModelFactory(
+            exchangeRepo
+        )
+    )
 
+    var showCompleted by remember { mutableStateOf(false) }
+
+    // Collect one-time events globally
+    LaunchedEffect(tradeVm) {
+        tradeVm.events.collect { ev ->
+            if (ev is TradeEvent.TradeCompleted) {
+                showCompleted = true
+            }
+        }
+    }
 
     val items = listOf(
         BottomItem(AppScreens.HOME, "Home", Icons.Filled.Home),
@@ -82,6 +103,24 @@ fun AppNavigation() {
             }
         }
     ) { innerPadding ->
+        // Dialogo de trade completado
+        if (showCompleted) {
+            AlertDialog(
+                onDismissRequest = {
+                    showCompleted = false
+                },
+                title = { Text("Trade completed!") },
+                text  = { Text("Both Pokémon were exchanged successfully.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showCompleted = false
+                        }
+                    ) { Text("OK") }
+                }
+            )
+        }
+
         NavHost(
             navController = navController,
             startDestination = AppScreens.HOME,
@@ -150,13 +189,6 @@ fun AppNavigation() {
 
             // Pantalla principal de Trade
             composable(AppScreens.TRADE) { backStackEntry ->
-                val tradeVm: TradeViewModel = viewModel(
-                    backStackEntry,
-                    factory = TradeViewModelFactory(
-                        exchangeRepo
-                    )
-                )
-
                 TradeHomeScreen(
                     viewModel = tradeVm,
                     onSelectFromFavorites = { navController.navigate(AppScreens.TRADE_SELECT) },
@@ -166,13 +198,6 @@ fun AppNavigation() {
 
             // Pantalla para seleccionar un pokemon para tradear
             composable(AppScreens.TRADE_SELECT) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppScreens.TRADE)
-                }
-                val tradeVm: TradeViewModel = viewModel(
-                    parentEntry,
-                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
-                )
                 val tradeSelectVm: TradeSelectViewModel = viewModel(
                     factory = TradeSelectViewModelFactory(faveRepo)
                 )
@@ -197,35 +222,20 @@ fun AppNavigation() {
 
             // Pantalla que muestra código generado para tradear un pokemon
             composable(AppScreens.TRADE_SHOW_CODE) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppScreens.TRADE)
-                }
-                val tradeVm: TradeViewModel = viewModel(
-                    parentEntry,
-                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
-                )
-
                 val id = backStackEntry.arguments?.getString("pokemonId")?.toIntOrNull() ?: 0
                 val name = backStackEntry.arguments?.getString("pokemonName") ?: "Unknown"
+
                 TradeShowCodeScreen(
                     viewModel = tradeVm,
                     pokemonId = id,
                     pokemonName = name,
-                    onBack = { navController.popBackStack() },
+                    onBack = { navController.popBackStack(AppScreens.TRADE, inclusive = false) },
                     onDone = { navController.popBackStack(AppScreens.TRADE, inclusive = false) }
                 )
             }
 
             // Pantalla para ingresar código para tradear un pokemon
             composable(AppScreens.TRADE_ENTER_CODE) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(AppScreens.TRADE)
-                }
-                val tradeVm: TradeViewModel = viewModel(
-                    parentEntry,
-                    factory = TradeViewModelFactory(RepositoryProvider.provideExchangeRepository())
-                )
-
                 TradeEnterCodeScreen(
                     viewModel = tradeVm,
                     onBack = { navController.popBackStack() },

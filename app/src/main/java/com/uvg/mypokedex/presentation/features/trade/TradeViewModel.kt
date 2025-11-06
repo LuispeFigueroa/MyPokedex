@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uvg.mypokedex.domain.model.Exchange
 import com.uvg.mypokedex.domain.repo.ExchangeRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -16,6 +18,37 @@ class TradeViewModel(
     private val _state = MutableStateFlow(TradeUiState())
     val state: StateFlow<TradeUiState> = _state.asStateFlow()
 
+    private val _events = MutableSharedFlow<TradeEvent>()
+    val events = _events.asSharedFlow()
+
+    private var observeJob: kotlinx.coroutines.Job? = null
+    private var lastStatus: Exchange.Status? = null
+
+    // Iniciar observador de cambios en exchange
+    private fun startObserving(exchangeId: String) {
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
+            exchangeRepo.observeExchange(exchangeId).collect { ex ->
+                // Update UI state with server truth
+                _state.update {
+                    it.copy(
+                        exchangeId = ex?.id,
+                        code = ex?.code,
+                        offerAId = ex?.offerAId,
+                        offerAName = ex?.offerAName,
+                        status = ex?.status,
+                        isBusy = false,
+                        error = null
+                    )
+                }
+                if (lastStatus != Exchange.Status.COMMITTED && ex?.status == Exchange.Status.COMMITTED) {
+                    _events.emit(TradeEvent.TradeCompleted)
+                }
+                lastStatus = ex?.status
+            }
+        }
+    }
+
     // Crear el trade (usuario A)
     fun createExchangeWithOfferA(id: Int, name: String) {
         viewModelScope.launch {
@@ -24,6 +57,7 @@ class TradeViewModel(
             _state.update {
                 r.fold(
                     onSuccess = { ex ->
+                        startObserving(ex.id)
                         it.copy(
                             isBusy = false,
                             exchangeId = ex.id,
@@ -47,6 +81,7 @@ class TradeViewModel(
             _state.update {
                 r.fold(
                     onSuccess = { ex ->
+                        startObserving(ex.id)
                         onJoined(ex.id)
                         it.copy(
                             isBusy = false,
@@ -87,6 +122,8 @@ class TradeViewModel(
             _state.update { s ->
                 r.fold(
                     onSuccess = {
+                        observeJob?.cancel()
+                        lastStatus = null
                         onCanceled()
                         TradeUiState()
                     },
