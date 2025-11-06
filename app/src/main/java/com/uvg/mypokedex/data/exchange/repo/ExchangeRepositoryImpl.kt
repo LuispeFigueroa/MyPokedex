@@ -46,41 +46,58 @@ class ExchangeRepositoryImpl(
             status = Exchange.Status.PROPOSED
         )
     }
-
     // Usuario B se une al Exchange con el código
     override suspend fun joinByCode(code: String): Result<Exchange> = runCatching {
-        // Busca exchange por code
+        val currentUid = uid()
+
+        // Buscar el exchange por code
         val snap = exchanges().whereEqualTo("code", code).limit(1).get().await()
         val doc = snap.documents.firstOrNull() ?: error("Code not found")
-        val data = doc.data ?: error("Invalid exchange")
-        val userA = data["userA"] as String
-        val currentUid = uid()
-        if (currentUid == userA) error("You cannot join your own exchange")
 
-        // Si ya hay userB, seguimos, si no lo seteamos
-        if ((data["userB"] as? String) == null) {
-            doc.reference.update(
-                mapOf(
-                    "userB" to currentUid,
-                    "status" to Exchange.Status.JOINED.name
-                )
-            ).await()
-        }
+        // Usar transacción para evitar que dos usuarios se adhieran al mismo tiempo
+        db.runTransaction { trx ->
+            val ref = doc.reference
+            val s = trx.get(ref)
+            val data = s.data ?: error("Invalid exchange")
 
-        // Devuelve Exchange
-        val offerA = data["offerA"] as Map<*, *>
-        Exchange(
-            id = doc.id,
-            code = data["code"] as String,
-            userA = userA,
-            userB = currentUid,
-            offerAId = (offerA["id"] as Number).toInt(),
-            offerAName = offerA["name"] as String,
-            offerBId = null,
-            offerBName = null,
-            status = Exchange.Status.JOINED
-        )
+            val userA = data["userA"] as String
+            if (currentUid == userA) error("You cannot join your own exchange")
+
+            val existingB = data["userB"] as? String
+            val offerA = data["offerA"] as Map<*, *>
+            val offerB = data["offerB"] as? Map<*, *>
+
+            val resolvedB = when {
+                existingB == null -> {
+                    trx.update(
+                        ref,
+                        mapOf(
+                            "userB" to currentUid,
+                            "status" to Exchange.Status.JOINED.name,
+                            "updatedAt" to Timestamp.now()
+                        )
+                    )
+                    currentUid
+                }
+                existingB == currentUid -> currentUid // ya estaba unido (idempotente)
+                else -> error("This exchange already has two participants")
+            }
+
+            // Devolver un Exchange consistente
+            Exchange(
+                id = ref.id,
+                code = data["code"] as String,
+                userA = userA,
+                userB = resolvedB,
+                offerAId = (offerA["id"] as Number).toInt(),
+                offerAName = offerA["name"] as String,
+                offerBId = (offerB?.get("id") as? Number)?.toInt(),
+                offerBName = offerB?.get("name") as? String,
+                status = Exchange.Status.JOINED
+            )
+        }.await()
     }
+
 
     // Usuario B finaliza el trade
     override suspend fun commitWithOfferB(exchangeId: String, offerBId: Int, offerBName: String): Result<Unit> = runCatching {
