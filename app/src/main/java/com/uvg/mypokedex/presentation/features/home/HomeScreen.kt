@@ -212,7 +212,7 @@ fun HomeScreen(
     }
 
     // Umbral de estar "cerca del final" de la página
-    val prefetchThreshold = 2
+    val prefetchThreshold = 6
 
     // Detector de estar "cerca del final" de la página
     LaunchedEffect(
