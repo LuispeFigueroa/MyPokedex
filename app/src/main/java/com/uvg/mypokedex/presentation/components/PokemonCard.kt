@@ -10,14 +10,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.uvg.mypokedex.domain.model.FavoritePokemon
 import com.uvg.mypokedex.domain.model.NamedItem
 
 @Composable
 fun PokemonCard(
-    item: NamedItem,
+    item: NamedItem? = null,
+    favorite: FavoritePokemon? = null,
     onClick: (Int) -> Unit = {}
 ) {
-    val id = item.idFromUrl() ?: return
+    val pokemon: NamedItem? = if (favorite != null) {
+        NamedItem(favorite.name, "https://pokeapi.co/api/v2/pokemon/${favorite.id}/")
+    } else {
+        item
+    }
+
+    val id = pokemon?.idFromUrl() ?: return
     val sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
 
     val cardColor = MaterialTheme.colorScheme.surfaceVariant
@@ -37,19 +45,21 @@ fun PokemonCard(
         ) {
             AsyncImage(
                 model = sprite,
-                contentDescription = "Imagen de ${item.name}",
+                contentDescription = "Imagen de ${pokemon.name}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
                 contentScale = ContentScale.Fit
             )
 
-            Text(
-                text = item.name.replaceFirstChar { it.uppercase() },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
+            pokemon.name.replaceFirstChar { it.uppercase() }.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Text(
                 text = "#%03d".format(id),

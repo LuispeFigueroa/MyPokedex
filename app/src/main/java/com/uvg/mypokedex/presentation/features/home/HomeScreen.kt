@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -71,8 +72,8 @@ fun HomeScreen(
         else state.items.filter { it.name.contains(query.trim(), ignoreCase = true) }
     }
 
-    val visibleFiltered = remember(filteredItems, state.visibleCount) {
-        filteredItems.take(state.visibleCount)
+    val visibleFiltered = remember(filteredItems, state.visibleCount, query) {
+        if (query.isBlank()) filteredItems.take(state.visibleCount) else filteredItems
     }
 
     Scaffold(
@@ -83,12 +84,12 @@ fun HomeScreen(
                     if (!isOnline) {
                         TooltipBox(
                             positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                            tooltip = { Text("No Internet") },
+                            tooltip = { Text("No Internet connection") },
                             state = rememberTooltipState()
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Warning,
-                                contentDescription = "Sin conexión",
+                                contentDescription = "No Internet connection",
                                 tint = Color.Red,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
@@ -97,7 +98,8 @@ fun HomeScreen(
                     IconButton(onClick = { onOpenOrder() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = "Ordenar"
+                            contentDescription = "Order",
+                            modifier = Modifier.size(35.dp)
                         )
                     }
                 }
@@ -118,7 +120,7 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 singleLine = true,
                 label = { Text("Search by name") },
-                placeholder = { Text("Ej. pikachu") }
+                placeholder = { Text("Ex. Pikachu") }
             )
 
             // Lista de pokemones
@@ -180,9 +182,11 @@ fun HomeScreen(
                                     .padding(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                when {
-                                    state.isLoadingMore -> CircularProgressIndicator()
-                                    state.endReached     -> Text("No more pokemon left")
+                                if (query.isBlank()) {
+                                    when {
+                                        state.isLoadingMore -> CircularProgressIndicator()
+                                        state.endReached     -> Text("No more pokemon left")
+                                    }
                                 }
                             }
                             Spacer(Modifier.height(16.dp))
@@ -217,6 +221,7 @@ fun HomeScreen(
         state.endReached,
         state.isLoadingInitial,
         visibleFiltered.size,
+        query
     ) {
         snapshotFlow {
             val info = gridState.layoutInfo
@@ -230,7 +235,7 @@ fun HomeScreen(
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                if (!state.isLoadingMore && !state.endReached && !state.isLoadingInitial) {
+                if (query.isBlank() && !state.isLoadingMore && !state.endReached && !state.isLoadingInitial) {
                     viewModel.showMoreLocallyOrLoad()
                 }
             }
