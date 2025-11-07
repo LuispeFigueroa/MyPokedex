@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyPokedex">
         <activity
-            android:name="com.uvg.mypokedex.ui.features.main.MainActivity"
+            android:name="com.uvg.mypokedex.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyPokedex">
             <intent-filter>
