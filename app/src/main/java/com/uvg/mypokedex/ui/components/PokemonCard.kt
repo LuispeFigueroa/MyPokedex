@@ -1,6 +1,5 @@
 package com.uvg.mypokedex.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,7 @@ fun PokemonCard(
  pokemon: Pokemon,
  onClick: (Pokemon) -> Unit = {}
 ) {
- val typeName = pokemon.types.firstOrNull()?.lowercase()
+ val typeName = pokemon.type.firstOrNull()?.lowercase()
  val typeColor = when (typeName) {
   "agua", "water" -> Color.Cyan
   "fuego", "fire" -> Color.Red

@@ -3,6 +3,7 @@ package com.uvg.mypokedex.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,20 +16,22 @@ import androidx.compose.runtime.Composable
 
 fun TopBar(
     name: String,
-    onBackClick: () -> Unit,
-    onHeartClick: (() -> Unit)? = null
+    isFavorite: Boolean,
+    onToggleFavorite: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = { Text(name) },
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Go back")
-            }
+            Icon(
+                Icons.Default.ArrowBack,
+                contentDescription = "Back icon"
+            )
         },
         actions = {
-            if (onHeartClick != null) {
-                IconButton(onClick = onHeartClick) {
-                    Icon(Icons.Default.Favorite, contentDescription = "like")
+            if (onToggleFavorite != null) {
+                IconButton(onClick = onToggleFavorite) {
+                    if (isFavorite) Icon(Icons.Default.Favorite, contentDescription = "Unlike")
+                    else Icon(Icons.Default.FavoriteBorder, contentDescription = "Like")
                 }
             }
         }
