@@ -43,6 +43,12 @@ class TradeViewModel(
                 }
                 if (lastStatus != Exchange.Status.COMMITTED && ex?.status == Exchange.Status.COMMITTED) {
                     _events.emit(TradeEvent.TradeCompleted)
+
+                    // Limpiamos el estado
+                    _state.update { TradeUiState() }
+                    observeJob?.cancel()
+                    lastStatus = null
+                    return@collect
                 }
                 lastStatus = ex?.status
             }
@@ -131,5 +137,10 @@ class TradeViewModel(
                 )
             }
         }
+    }
+
+    // Limpiar errores
+    fun clearError() {
+        _state.update { it.copy(error = null) }
     }
 }

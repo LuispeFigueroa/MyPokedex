@@ -204,6 +204,7 @@ fun AppNavigation() {
 
                 TradeSelectScreen(
                     viewModel = tradeSelectVm,
+                    viewModelTrade = tradeVm,
                     onBack = { navController.popBackStack() },
                     onPokemonSelected = { id, name ->
                         // Si hay un exchangeId activo en VM, actúa como B (finalizar trade)

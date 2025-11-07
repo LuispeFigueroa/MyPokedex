@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 fun ErrorBanner(
     modifier: Modifier = Modifier,
     message: String,
+    retryButton: Boolean = true,
     dismissButton: Boolean = true,
     onRetry: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null
@@ -31,8 +32,10 @@ fun ErrorBanner(
                 modifier = Modifier.weight(1f)
             )
 
-            onRetry?.let {
-                TextButton(onClick = it) { Text("Retry") }
+            if (retryButton) {
+                onRetry?.let {
+                    TextButton(onClick = it) { Text("Retry") }
+                }
             }
 
             if (dismissButton) {

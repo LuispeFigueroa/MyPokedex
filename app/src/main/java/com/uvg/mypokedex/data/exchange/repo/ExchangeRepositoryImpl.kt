@@ -121,6 +121,9 @@ class ExchangeRepositoryImpl(
             val offerAId = (offerA["id"] as Number).toInt()
             val offerAName = offerA["name"] as String
 
+            // Verificar que no es el mismo pokemon
+            if (offerAId == offerBId) error("You cannot trade the same Pokémon.")
+
             // Verifica existencias
             val favARef = userFavs(userA).document(offerAId.toString())
             val favBRef = userFavs(userB).document(offerBId.toString())
