@@ -1,3 +1,8 @@
-README
-![MyPokedex – AppNavigation kt  MyPokedex app main  2025-10-26 20-11-32](https://github.com/user-attachments/assets/26cbe221-0339-4a96-8555-9a057f73f166)
-![1026](https://github.com/user-attachments/assets/67a66cd1-0353-4262-8445-90a173fc380b)
+
+<img width="416" height="888" alt="image" src="https://github.com/user-attachments/assets/1df555c2-9013-4e2c-962a-a9001901c93f" />
+<img width="441" height="930" alt="image" src="https://github.com/user-attachments/assets/079c7fb4-e956-4a41-a20c-9d252d327dfe" />
+
+
+https://github.com/user-attachments/assets/b05a6877-9785-4bd0-9bde-3bdac3882275
+
+

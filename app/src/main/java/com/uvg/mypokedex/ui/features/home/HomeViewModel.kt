@@ -4,94 +4,68 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.uvg.mypokedex.data.model.Pokemon
-import com.uvg.mypokedex.data.model.Stats
-import kotlinx.coroutines.Dispatchers
+import com.uvg.mypokedex.core.common.Result
+import com.uvg.mypokedex.data.remote.mapper.PokemonListItem
+import com.uvg.mypokedex.data.repository.PokemonRepository
+import com.uvg.mypokedex.data.repository.RepositoryProvider
+import com.uvg.mypokedex.ui.state.PokedexListUiState
+import com.uvg.mypokedex.ui.state.SortField
+import com.uvg.mypokedex.ui.state.SortOrder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.double
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    val pokemonList = mutableStateListOf<Pokemon>()
-    private var currentPage = 0
-    private var isLoading = false
+class HomeViewModel(
+    application: Application,
+    private val repo: PokemonRepository = RepositoryProvider.pokemonRepository
+) : AndroidViewModel(application) {
+
+    val pokemonList = mutableStateListOf<PokemonListItem>()
+    private val _uiState = MutableStateFlow(PokedexListUiState())
+    val uiState: StateFlow<PokedexListUiState> = _uiState
+
     private var hasMore = true
 
-    fun getFileNameForCurrentPage(currentPage: Int): String {
-        val startIndex = currentPage * 10 + 1
-        val endIndex = startIndex + 9
-
-        return "pokemon_${startIndex.toString().padStart(3, '0')}_${endIndex.toString().padStart(3, '0')}.json"
-    }
-
     fun loadMorePokemon() {
-        if (isLoading || !hasMore) return
-        isLoading = true
+        if (_uiState.value.isLoading || !hasMore) return
 
         viewModelScope.launch {
-            val fileName = getFileNameForCurrentPage(currentPage)
-            val result = runCatching {
-                val text = withContext(Dispatchers.IO) {
-                    getApplication<Application>()
-                        .assets
-                        .open(fileName)
-                        .bufferedReader()
-                        .use { it.readText() }
-                }
-                val root = Json.parseToJsonElement(text).jsonObject
-                val items = root["items"]?.jsonArray ?: JsonArray(emptyList())
+            repo.loadNextPage(pokemonList.size).collect { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    }
+                    is Result.Success -> {
+                        val pageItems = result.data
+                        if (pageItems.isEmpty()) {
+                            hasMore = false
+                        }
+                        pokemonList.addAll(pageItems)
+                        _uiState.update {
+                            it.copy(isLoading = false, canLoadMore = pageItems.isNotEmpty())
+                        }
+                    }
+                    is Result.Error -> {
 
-                items.map { el ->
-                    val obj = el.jsonObject
-
-                    val types = obj["type"]?.jsonArray?.map { it.jsonPrimitive.content } ?: emptyList()
-
-                    val statsMap: Map<String, Int> =
-                        obj["stats"]?.jsonArray?.associate { stEl ->
-                            val sObj = stEl.jsonObject
-                            val name = sObj["name"]!!.jsonPrimitive.content
-                            val value = sObj["value"]!!.jsonPrimitive.int
-                            name to value
-                        } ?: emptyMap()
-
-                    Pokemon(
-                        id = obj["id"]!!.jsonPrimitive.int,
-                        name = obj["name"]!!.jsonPrimitive.content,
-                        type = types,
-                        weight = obj["weight"]!!.jsonPrimitive.double.toFloat(),
-                        height = obj["height"]!!.jsonPrimitive.double.toFloat(),
-                        stats = Stats(
-                            hp = statsMap["hp"] ?: 0,
-                            hpCurrent = statsMap["hp"] ?: 0,
-                            attack = statsMap["attack"] ?: 0,
-                            defense = statsMap["defense"] ?: 0,
-                            specialAttack = statsMap["special-attack"] ?: 0,
-                            specialDefense = statsMap["special-defense"] ?: 0,
-                            speed = statsMap["speed"] ?: 0
-                        )
-                    )
+                        _uiState.update {
+                            it.copy(isLoading = false, errorMessage = result.message)
+                        }
+                    }
                 }
             }
-
-            result.onSuccess { newItems ->
-                if (newItems.isEmpty()) {
-                    hasMore = false
-                } else {
-                    pokemonList.addAll(newItems)
-                    currentPage += 1
-                }
-            }
-            isLoading = false
         }
     }
+
+    fun onSearchQueryChanged(query: String) {
+        _uiState.update { it.copy(query = query) }
+    }
+
+    fun onSortFieldChanged(field: SortField) {
+        _uiState.update { it.copy(sortField = field) }
+    }
+
+    fun onSortOrderChanged(order: SortOrder) {
+        _uiState.update { it.copy(sortOrder = order) }
+    }
 }
-
-
-
-

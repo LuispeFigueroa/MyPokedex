@@ -23,10 +23,10 @@ fun TopBar(
     TopAppBar(
         title = { Text(name) },
         navigationIcon = {
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = "Back icon"
-            )
+            IconButton(onClick = onBack){
+                Icon(Icons.Default.ArrowBack,
+                    contentDescription = "Back")
+            }
         },
         actions = {
             if (onToggleFavorite != null) {
