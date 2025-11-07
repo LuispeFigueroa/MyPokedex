@@ -17,7 +17,8 @@ import androidx.compose.runtime.Composable
 fun TopBar(
     name: String,
     isFavorite: Boolean,
-    onToggleFavorite: (() -> Unit)? = null
+    onToggleFavorite: (() -> Unit)? = null,
+    onBack: () -> Unit
 ) {
     TopAppBar(
         title = { Text(name) },
